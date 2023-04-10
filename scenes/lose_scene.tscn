@@ -1,0 +1,68 @@
+[gd_scene load_steps=5 format=3 uid="uid://dut2vnh1l6k32"]
+
+[ext_resource type="FontFile" uid="uid://djsorxvrpa2gg" path="res://assets/font/ModernDOS8x14.ttf" id="1_o7tqn"]
+[ext_resource type="Script" path="res://scripts/exit_button.gd" id="2_3tdnf"]
+[ext_resource type="AudioStream" uid="uid://blpxwcq5412kg" path="res://assets/bang_04.ogg" id="3_2adgx"]
+[ext_resource type="Script" path="res://scripts/quit_game_button.gd" id="3_pyc1f"]
+
+[node name="lose_scene" type="Node2D"]
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+metadata/_edit_lock_ = true
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Control"]
+layout_mode = 0
+offset_left = 115.0
+offset_top = 141.0
+offset_right = 1744.0
+offset_bottom = 716.0
+theme_override_fonts/normal_font = ExtResource("1_o7tqn")
+theme_override_font_sizes/normal_font_size = 65
+text = "BANG!! You Died!!"
+
+[node name="Button" type="Button" parent="Control"]
+layout_mode = 0
+offset_left = 1342.0
+offset_top = 790.0
+offset_right = 1745.0
+offset_bottom = 891.0
+theme_override_fonts/font = ExtResource("1_o7tqn")
+theme_override_font_sizes/font_size = 49
+text = "Try Again
+"
+script = ExtResource("2_3tdnf")
+
+[node name="Button2" type="Button" parent="Control"]
+layout_mode = 0
+offset_left = 1342.0
+offset_top = 904.0
+offset_right = 1745.0
+offset_bottom = 1005.0
+theme_override_fonts/font = ExtResource("1_o7tqn")
+theme_override_font_sizes/font_size = 49
+text = "Quit Game"
+script = ExtResource("3_pyc1f")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_2adgx")
+autoplay = true
+
+[connection signal="pressed" from="Control/Button" to="Control/Button" method="_on_pressed"]
+[connection signal="pressed" from="Control/Button2" to="Control/Button2" method="_on_pressed"]

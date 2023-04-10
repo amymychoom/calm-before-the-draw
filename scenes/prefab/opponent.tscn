@@ -1,0 +1,92 @@
+[gd_scene load_steps=9 format=3 uid="uid://ct37cbejdfcdm"]
+
+[ext_resource type="Script" path="res://scripts/opponents/opponent.gd" id="1_8djto"]
+[ext_resource type="Script" path="res://scripts/opponents/pressing_buttons_handler.gd" id="2_ia1gt"]
+[ext_resource type="Texture2D" uid="uid://b0yscgralqsew" path="res://assets/opponent1.png" id="2_iilpr"]
+[ext_resource type="Texture2D" uid="uid://b2tacw5t7fs4m" path="res://assets/opponent2.png" id="3_xutso"]
+[ext_resource type="FontFile" uid="uid://djsorxvrpa2gg" path="res://assets/font/ModernDOS8x14.ttf" id="5_ud8ce"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_nb75a"]
+radius = 100.125
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_psk0h"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gnf6d"]
+bg_color = Color(0.811765, 0.776471, 0.721569, 1)
+
+[node name="opponent" type="Node2D" node_paths=PackedStringArray("escalation_progress_bar", "buttons_handler", "sprite", "shadow_sprite")]
+script = ExtResource("1_8djto")
+escalation_progress_bar = NodePath("opp_ui/EscalationProgress")
+buttons_handler = NodePath("pressing_buttons_handler")
+escalation_increase_speed = 10.0
+escalation_decrease_speed = -8.0
+sprite = NodePath("opponent_sprite")
+shadow_sprite = NodePath("opponent_sprite/opponent_sprite_shadow")
+texture_1 = ExtResource("2_iilpr")
+texture_2 = ExtResource("3_xutso")
+
+[node name="opponent_sprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_iilpr")
+
+[node name="opponent_sprite_shadow" type="Sprite2D" parent="opponent_sprite"]
+modulate = Color(0.0784314, 0.0784314, 0.0784314, 1)
+show_behind_parent = true
+position = Vector2(6, 13)
+texture = ExtResource("2_iilpr")
+
+[node name="pressing_buttons_handler" type="Node2D" parent="." node_paths=PackedStringArray("timer", "key_demand_label")]
+script = ExtResource("2_ia1gt")
+timer = NodePath("Timer")
+key_demand_label = NodePath("../opp_ui/KeyDemandLabel")
+
+[node name="Timer" type="Timer" parent="pressing_buttons_handler"]
+wait_time = 4.0
+
+[node name="DeescalationArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeescalationArea"]
+shape = SubResource("CircleShape2D_nb75a")
+
+[node name="opp_ui" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 81.0
+offset_top = -91.0
+offset_right = 358.0
+offset_bottom = 88.0
+
+[node name="ColorRect" type="ColorRect" parent="opp_ui"]
+layout_mode = 0
+offset_left = 73.0
+offset_top = 69.0
+offset_right = 359.0
+offset_bottom = 116.0
+color = Color(0.811765, 0.776471, 0.721569, 1)
+
+[node name="EscalationProgress" type="ProgressBar" parent="opp_ui"]
+layout_mode = 0
+offset_left = 77.0
+offset_top = 73.0
+offset_right = 356.0
+offset_bottom = 112.0
+theme_override_styles/background = SubResource("StyleBoxFlat_psk0h")
+theme_override_styles/fill = SubResource("StyleBoxFlat_gnf6d")
+value = 50.0
+show_percentage = false
+
+[node name="KeyDemandLabel" type="RichTextLabel" parent="opp_ui"]
+layout_mode = 0
+offset_left = -183.0
+offset_top = -180.0
+offset_right = 29.0
+offset_bottom = -49.0
+theme_override_colors/default_color = Color(0.811765, 0.776471, 0.721569, 1)
+theme_override_fonts/normal_font = ExtResource("5_ud8ce")
+theme_override_font_sizes/normal_font_size = 143
+bbcode_enabled = true
+text = "[center]A"
+
+[connection signal="timeout" from="pressing_buttons_handler/Timer" to="pressing_buttons_handler" method="_on_timeout"]
+[connection signal="area_entered" from="DeescalationArea" to="." method="_begin_player_gun_overlapping"]
+[connection signal="area_exited" from="DeescalationArea" to="." method="_end_player_gun_overlapping"]

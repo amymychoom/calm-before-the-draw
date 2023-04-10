@@ -1,0 +1,105 @@
+[gd_scene load_steps=12 format=3 uid="uid://7thjdjkfvgrv"]
+
+[ext_resource type="Script" path="res://scripts/game_manager/world_GM.gd" id="1_4eljx"]
+[ext_resource type="Script" path="res://scripts/player/player_gun.gd" id="1_6uw5a"]
+[ext_resource type="PackedScene" uid="uid://ct37cbejdfcdm" path="res://scenes/prefab/opponent.tscn" id="1_yjv7p"]
+[ext_resource type="AudioStream" uid="uid://6k0vixnso5t7" path="res://assets/spagetti western.ogg" id="2_h0gmo"]
+[ext_resource type="Texture2D" uid="uid://bomtoeguecafp" path="res://assets/bg/background.png" id="2_smhm2"]
+[ext_resource type="Texture2D" uid="uid://b0yscgralqsew" path="res://assets/opponent1.png" id="4_4gft4"]
+[ext_resource type="Texture2D" uid="uid://b2tacw5t7fs4m" path="res://assets/opponent2.png" id="4_rr0gc"]
+[ext_resource type="Texture2D" uid="uid://bpsaoel72hoeo" path="res://assets/crosshair.png" id="7_ebrne"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bbrdd"]
+bg_color = Color(0.0313726, 0.0313726, 0.0313726, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_42f3b"]
+bg_color = Color(0.811765, 0.776471, 0.721569, 1)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_bs256"]
+radius = 83.006
+
+[node name="World" type="Node2D" node_paths=PackedStringArray("opponent_1", "opponent_2", "global_escalation_progress_bar") groups=["gm"]]
+script = ExtResource("1_4eljx")
+opponent_1 = NodePath("opponent")
+opponent_2 = NodePath("opponent2")
+global_escalation_progress_bar = NodePath("Control/global_escalation_progress")
+max_global_escalation = 400.0
+escalation_change = 40.0
+deescalation_change = 1.5
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_h0gmo")
+volume_db = -11.556
+autoplay = true
+
+[node name="Background" type="Sprite2D" parent="."]
+position = Vector2(970, 575)
+texture = ExtResource("2_smhm2")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1920.0
+offset_bottom = 222.0
+
+[node name="ColorRect" type="ColorRect" parent="Control"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 11.0
+offset_right = 1906.0
+offset_bottom = 64.0
+color = Color(0.811765, 0.776471, 0.721569, 1)
+
+[node name="global_escalation_progress" type="ProgressBar" parent="Control"]
+layout_mode = 0
+offset_left = 21.0
+offset_top = 16.0
+offset_right = 1902.0
+offset_bottom = 59.0
+theme_override_styles/background = SubResource("StyleBoxFlat_bbrdd")
+theme_override_styles/fill = SubResource("StyleBoxFlat_42f3b")
+max_value = 400.0
+value = 100.0
+show_percentage = false
+
+[node name="change_opp_keys_timer" type="Timer" parent="."]
+wait_time = 12.0
+autostart = true
+
+[node name="opponent" parent="." instance=ExtResource("1_yjv7p")]
+position = Vector2(499, 415)
+escalation_increase_speed = 4.0
+escalation_decrease_speed = -6.0
+texture_2 = ExtResource("4_4gft4")
+
+[node name="opponent2" parent="." instance=ExtResource("1_yjv7p")]
+position = Vector2(1321, 417)
+escalation_increase_speed = 7.0
+which_texture = 2
+texture_1 = ExtResource("4_rr0gc")
+
+[node name="player_gun" type="Node2D" parent="."]
+position = Vector2(991, 955)
+script = ExtResource("1_6uw5a")
+gun_move_speed = 8.5
+sway_multiplier = Vector2(5, 8.5)
+
+[node name="Sprite2D" type="Sprite2D" parent="player_gun"]
+modulate = Color(0.909804, 0.184314, 0, 1)
+texture_filter = 1
+rotation = 0.785398
+scale = Vector2(2, 2)
+texture = ExtResource("7_ebrne")
+
+[node name="DeescalationArea" type="Area2D" parent="player_gun" groups=["player"]]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="player_gun/DeescalationArea"]
+shape = SubResource("CircleShape2D_bs256")
+
+[node name="Timer" type="Timer" parent="player_gun"]
+autostart = true
+
+[connection signal="timeout" from="change_opp_keys_timer" to="." method="_change_opp_turn"]
+[connection signal="lose" from="opponent" to="." method="lose"]
+[connection signal="lose" from="opponent2" to="." method="lose"]
+[connection signal="timeout" from="player_gun/Timer" to="player_gun" method="_on_timer_timeout"]
